@@ -3,18 +3,21 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 def stagGlance = tempVMImageRegistry
 def prodGlance = permVMImageRegistry
+
 	
 def BuildImageName="${packerImageName}"
 def UUID
 
 //Make the following as Params 
 def image_name = "${packerImageName}"
-//def identity_endpoint
-//if("${stage}".toUpperCase() == 'BUILD' || "${stage}".toUpperCase() == 'CERTIFY') {
-//	identity_endpoint = "${tempVMImageRegistry}"
-//} else if ("${stage}".toUpperCase() == 'DEPLOY') {
-//	identity_endpoint = "${permVMImageRegistry}"
-//}
+/*
+def identity_endpoint
+if("${stage}".toUpperCase() == 'BUILD' || "${stage}".toUpperCase() == 'CERTIFY') {
+	identity_endpoint = "${tempVMImageRegistry}"
+} else if ("${stage}".toUpperCase() == 'DEPLOY') {
+	identity_endpoint = "${permVMImageRegistry}"
+}
+*/
 /*
 def builder_type = "openstack"
 def tenant_name = "admin"
@@ -94,7 +97,7 @@ node {
   echo "Networks    :${networks}" 
   echo "Source Image Name - But this is expected from developer now    :${source_image_name}" 
   echo "Flavor    :${flavor}" 
-  echo "Insecure    :${insecure}" 	
+  echo "Insecure    :${insecure}"
 	
 	
 // ---- Source Shell
