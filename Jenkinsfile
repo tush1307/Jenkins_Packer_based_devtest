@@ -10,14 +10,14 @@ def UUID
 
 //Make the following as Params 
 def image_name = "${packerImageName}"
-/*
+/**
 def identity_endpoint
 if("${stage}".toUpperCase() == 'BUILD' || "${stage}".toUpperCase() == 'CERTIFY') {
 	identity_endpoint = "${tempVMImageRegistry}"
 } else if ("${stage}".toUpperCase() == 'DEPLOY') {
 	identity_endpoint = "${permVMImageRegistry}"
 }
-*/
+**/
 /*
 def builder_type = "openstack"
 def tenant_name = "admin"
