@@ -4,6 +4,10 @@ def nexusRepo = nexusRepository
 def stagGlance = tempVMImageRegistry
 def prodGlance = permVMImageRegistry
 
+// This update is for Bug ID : 531
+def httpProxy = 'http://165.225.104.34:80'
+def httpsProxy = 'https://165.225.104.34:80'
+
 	
 def BuildImageName="${packerImageName}"
 def UUID
