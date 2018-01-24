@@ -312,7 +312,7 @@ stage('build') {
 	echo "The value returned by Packer Build For UUID generation is: ${UUID}"
 }
 	
-	
+/*	
 //---------------------------------------
   if("${stage}".toUpperCase() == 'BUILD') {
     echo 'The Requested Stage is Build Only,hence successful VM Images will be pushed to Temp Repo'
