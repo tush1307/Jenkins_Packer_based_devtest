@@ -319,7 +319,7 @@ stage('build') {
 	echo "The value returned by Packer Build For UUID generation is: ${UUID}"
 }
 	//Scanning check for VM
-stage('Vulnerability Scanning in VM') {
+/*stage('Vulnerability Scanning in VM') {
 	echo 'hi Vulnerability scanning'
 sh dpkg -s apt-transport-https | grep -i status
 sh apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
@@ -328,7 +328,7 @@ sh apt-get update --force
 sh apt-get install lynis --force
 sh lynis audit system
 }
-	
+	*/
 /*	
 //---------------------------------------
   if("${stage}".toUpperCase() == 'BUILD') {
