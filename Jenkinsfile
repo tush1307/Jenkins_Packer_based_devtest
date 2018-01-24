@@ -75,7 +75,7 @@ node {
   echo "\n\nOpenStack Parameters" 
   echo "Builder Type    :${builder_type}" 
   echo "Tenant Name    :${tenant_name}" 
-  echo "Domain Name    :${domain_name}" 
+  //echo "Domain Name    :${domain_name}" 
   echo "Username    :${username}" 
   echo "Password    :${password}" 
   echo "Region    :${region}" 
