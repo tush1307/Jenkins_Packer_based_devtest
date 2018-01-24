@@ -269,6 +269,7 @@ stage ('Update Parameters in PackerFile') {
 //BUILD & PACKING
 stage('validate') {
 	echo "Validating the template : ${AppPacker}"
+	echo "builder_type  : ${builder_type}"
 	def packerValidateCommand = "packer validate -var builder_type=${builder_type} \
 	-var identity_endpoint=${identity_endpoint} \
 	-var tenant_name=${tenant_name} \
