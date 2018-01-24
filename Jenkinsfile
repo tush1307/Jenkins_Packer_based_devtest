@@ -270,6 +270,12 @@ stage ('Update Parameters in PackerFile') {
 stage('validate') {
 	echo "Validating the template : ${AppPacker}"
 	echo "builder_type  : ${builder_type}"
+	echo "identity_endpoint  : ${identity_endpoint}"
+	echo "use_floating_ip  : ${use_floating_ip}"
+	echo "floating_ip_pool  : ${floating_ip_pool}"
+	echo "ssh_username  : ${ssh_username}"
+	echo "tenant_name  : ${tenant_name}"
+	
 	def packerValidateCommand = "packer validate -var builder_type=${builder_type} \
 	-var identity_endpoint=${identity_endpoint} \
 	-var tenant_name=${tenant_name} \
