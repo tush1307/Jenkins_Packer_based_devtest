@@ -314,12 +314,12 @@ stage('build') {
 	
 //Scanning check for VM
 
-sh dpkg -s apt-transport-https | grep -i status
-sh sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
-sh sudo add-apt-repository "deb [arch=amd64] https://packages.cisofy.com/community/lynis/deb/ xenial main"
-sh sudo apt-get update
-sh sudo apt-get install lynis
-sh sudo lynis audit system
+dpkg -s apt-transport-https | grep -i status
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
+sudo add-apt-repository "deb [arch=amd64] https://packages.cisofy.com/community/lynis/deb/ xenial main"
+sudo apt-get update --force
+sudo apt-get install lynis --force
+sudo lynis audit system
 	
 /*	
 //---------------------------------------
