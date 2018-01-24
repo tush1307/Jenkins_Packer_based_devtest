@@ -1,27 +1,13 @@
 #!/bin/bash +x
 def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
-def stagGlance = tempVMImageRegistry
-def prodGlance = permVMImageRegistry
 
-// This update is for Bug ID : 531
-def httpProxy = 'http://165.225.104.34:80'
-def httpsProxy = 'https://165.225.104.34:80'
-
-	
 def BuildImageName="${packerImageName}"
 def UUID
 
 //Make the following as Params 
 def image_name = "${packerImageName}"
-/**
-def identity_endpoint
-if("${stage}".toUpperCase() == 'BUILD' || "${stage}".toUpperCase() == 'CERTIFY') {
-	identity_endpoint = "${tempVMImageRegistry}"
-} else if ("${stage}".toUpperCase() == 'DEPLOY') {
-	identity_endpoint = "${permVMImageRegistry}"
-}
-**/
+
 /*
 def builder_type = "openstack"
 def tenant_name = "admin"
@@ -83,15 +69,13 @@ node {
   echo "SCM Pass    : ${scmPassword}"
   echo "HTTP Proxy  : ${httpProxy}"
   echo "HTTPS Proxy : ${httpsProxy}"
-  echo "Output Image Name : ${packerImageName}"
-  echo "Staging Glance  :${tempVMImageRegistry}" 
-  echo "Production Glance    :${permVMImageRegistry}"  	
+  echo "Output Image Name : ${packerImageName}"	
   echo "Nexus Host & Port  :${nexusRepoHostPort}" 
   echo "Nexus Repo Name    :${nexusRepo}"     
   echo "\n\nOpenStack Parameters" 
   echo "Builder Type    :${builder_type}" 
   echo "Tenant Name    :${tenant_name}" 
-  //echo "Domain Name -Not Used in V2    :${domain_name}" 
+  echo "Domain Name    :${domain_name}" 
   echo "Username    :${username}" 
   echo "Password    :${password}" 
   echo "Region    :${region}" 
