@@ -294,7 +294,7 @@ stage('validate') {
 	sh packerValidateCommand
 	//sh "packer -v || packer validate ${AppPacker}"
 }
-
+	
 stage('build') {
 	echo "Building using packerfile :${AppPacker}"
 	def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
@@ -317,6 +317,16 @@ stage('build') {
 	//sh "packer build -machine-readable ${AppPacker}  | tee build.log"
 	UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
 	echo "The value returned by Packer Build For UUID generation is: ${UUID}"
+}
+	//Scanning check for VM
+stage('Vulnerability Scanning in VM') {
+	echo 'hi Vulnerability scanning'
+sh dpkg -s apt-transport-https | grep -i status
+sh apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
+sh add-apt-repository "deb [arch=amd64] https://packages.cisofy.com/community/lynis/deb/ xenial main"
+sh apt-get update --force
+sh apt-get install lynis --force
+sh lynis audit system
 }
 	
 /*	
@@ -373,7 +383,7 @@ stage('build') {
  */
 
 	
-
+/*
 //END OF IMAGE PUSHING INTO REPOSITORY
 // NEXUS UPDATE
 stage('Publish Jenkins Output to Nexus')  {
@@ -387,6 +397,7 @@ stage('Publish Jenkins Output to Nexus')  {
 	//Dirty solution ends 
 	echo "UUID# ${UUID} #UUID"
 }
+*/
 }
 }
 finally {
