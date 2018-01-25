@@ -262,7 +262,7 @@ stage ('Initialization') {
 
     if (appPath + fileExists("${securityPackerFile}")) {
       echo "Security Packer file found at ${appPath}"
-      securityPackerFile = appPath + "${fileName}"
+      securityPackerFile = appPath + "${securityPackerFile}"
   } else {
       echo 'Security Packerfile not found under ' + appPath
   }
