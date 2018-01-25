@@ -328,7 +328,7 @@ stage('validate') {
   -var floating_ip_pool=${floating_ip_pool} \
   -var ssh_username=${ssh_username} \
   -var image_name=${security_image_name} \
-  -VAR source_image_name=${UUID} \
+  -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
   -var insecure=${insecure}  ${securityApppacker}"
@@ -376,7 +376,7 @@ stage('Vulnerability Scanning of VM') {
   -var floating_ip_pool=${floating_ip_pool} \
   -var ssh_username=${ssh_username} \
   -var image_name=${security_image_name} \
-  -VAR source_image_name=${UUID}\
+  -var source_image_name=${UUID}\
   -var networks=${networks} \
   -var flavor=${flavor} \
   -var insecure=${insecure} ${securityApppacker} | tee build.log"
