@@ -2,11 +2,13 @@
 def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
-def BuildImageName="${packerImageName}"
+def BuildImageName = "${packerImageName}"
 def UUID
 
 //Make the following as Params 
 def image_name = "${packerImageName}"
+
+def security_image_name = "${packerImageName}"+"securitytest"
 
 /*
 def builder_type = "openstack"
@@ -14,7 +16,7 @@ def tenant_name = "admin"
 def domain_name = "Default"
 def username = "admin"
 def password = "mypass"
-def region = "RegionOne"
+def region = "RegionOne""
 def use_floating_ip = true
 def floating_ip_pool = "external"
 def ssh_username = "ubuntu"
