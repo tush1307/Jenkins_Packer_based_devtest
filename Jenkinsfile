@@ -359,8 +359,6 @@ stage('validate') {
 stage('Vulnerability Scanning of VM') {
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
-  sh "bash -c '[ -d /vmSecurityReport/${JOB_NAME} ] && rm -rf /vmSecurityReport/${JOB_NAME}'|true"
-  sh "mkdir /vmSecurityReport/${JOB_NAME}"
   def secutityPackerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
   -var identity_endpoint=${identity_endpoint} \
   -var tenant_name=${tenant_name} \
@@ -374,16 +372,15 @@ stage('Vulnerability Scanning of VM') {
   -VAR source_image_name=${UUID}\
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure} ${securityApppacker} | tee build-sec.log"
+  -var insecure=${insecure} ${securityApppacker} | tee build.log"
   
   echo "command: " + secutityPackerBuildCommand
   
   sh secutityPackerBuildCommand
   //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
-  SUUID = sh(script: "grep 'artifact,0,id' build-sec.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
+  SUUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   echo "The value returned by Security Packer Build For SUUID generation is: ${SUUID}"
-  sh "cp /vmSecurityReport/vmSecurityReport.tgz /vmSecurityReport/${JOB_NAME}"
-  sh "cd /vmSecurityReport/${JOB_NAME} && tar xvzf vmSecurityReport.tgz && mv vmSecurityReport.tgz /tmp"
+
 }
 
 /*stage('Vulnerability Scanning in VM') {
