@@ -63,6 +63,7 @@ def UpdatePacker() {
 try {
 node {
   echo "Parameter List"
+	echo "Indentity Url : ${identity_endpoint}"
   echo "SCM Type    : ${scmSourceRepo}"
   echo "SCM Path    : ${scmPath}"
   echo "SCM User    : ${scmUsername}"
