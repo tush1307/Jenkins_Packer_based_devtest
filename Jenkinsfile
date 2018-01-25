@@ -260,7 +260,13 @@ stage ('Initialization') {
       echo 'Packerfile for Security Test  not found under ' + appPath
   }*/
 
-  securityPackerFile = "${securityPackerFile}"
+    if (appPath + fileExists("${securityPackerFile}")) {
+      echo "Security Packer file found at ${appPath}"
+      securityPackerFile = appPath + "${fileName}"
+  } else {
+      echo 'Security Packerfile not found under ' + appPath
+  }
+
   // COPYING APP Directory to Current Working Directory
     def appWorkingDir = (appPath=='') ? '.' : appPath.substring(0, appPath.length()-1)  
 
