@@ -1,0 +1,66 @@
+{
+  "variables": {
+  "builder_type": "openstack",
+  "source_image_name": "",
+  "identity_endpoint": "",
+  "tenant_name": "",
+  "username": "",
+  "password": "",
+  "region": "",
+  "use_floating_ip": "",
+  "floating_ip_pool": "",
+  "ssh_username": "",
+  "image_name": "",
+  "networks": "",
+  "flavor": "",
+  "insecure": "true"
+},
+"builders": [
+  {
+  "type": "openstack",
+  "identity_endpoint": "{{user `identity_endpoint`}}",
+  "tenant_name": "{{user `tenant_name`}}",
+  "username": "{{user `username`}}",
+  "password": "{{user `password`}}",
+  "region": "{{user `region`}}",
+  "use_floating_ip": "{{user `use_floating_ip`}}",
+  "floating_ip_pool": "{{user `floating_ip_pool`}}",
+  "ssh_username": "{{user `ssh_username`}}",
+  "image_name": "{{user `image_name`}}",
+  "networks": "{{user `networks`}}",
+  "source_image_name": "{{user `source_image_name`}}",
+  "flavor": "{{user `flavor`}}",
+  "insecure": "{{user `insecure`}}"
+  }
+  ],
+  "provisioners": [
+    {
+      "destination": "/tmp/apt.conf",
+      "source": "/opt/tushar/environment",
+      "type": "file"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo '{{user `ubuntu`}}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "sleep 30",
+        "mkdir -p /etc/apt",
+        "yes | cp /tmp/apt.conf /etc/apt/apt.conf",
+        "pkill apt && apt-get install debsecan clamav lynis -y",
+            "mkdir -p /tmp/vmSecurityReport",
+        "lynis audit system -Q --report-file /tmp/vmSecurityReport/systemAudit.txt",
+        " echo 'Scan report' > /tmp/vmSecurityReport/systemAudit.txt ; DIRTOSCAN='/home /var/spool /bin /sbin /opt /etc';for S in ${DIRTOSCAN}; do  echo $S >>/tmp/vmSecurityReport/systemAudit.txt && clamscan -ri $S -l /tmp/vmSecurityReport/systemAudit.txt;done",
+
+        "debsecan --format report | tee /tmp/vmSecurityReport/debSecanReport.txt",
+        "cd /tmp/vmSecurityReport/ && tar cvzf ../vmSecurityReport.tgz *"
+      ]
+    },
+        {
+      "destination": "/vmSecurityReport",
+      "source": "./tmp/vmSecurityReport.tgz",
+      "type": "file",
+      "direction": "download"
+    }
+
+  ]
+}
