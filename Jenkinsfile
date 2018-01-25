@@ -3,7 +3,8 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
-def UUID
+def UUID = "5c4e5f04-bfec-431d-9077-47b65e363569"
+def SUUID = ""
 
 //Make the following as Params 
 def image_name = "${packerImageName}"
@@ -23,7 +24,7 @@ def ssh_username = "ubuntu"
 //def networks = "f60c08bd-3f40-41ae-b5f7-256ac9c7b8ac" //This is for 169
 def networks = "cb3abed9-5fed-4797-a759-f3bbef7846be" //"ef7cd6df-58b1-4b13-8acf-b9028cfc2063" //This is for 170
 //def source_image = "6d153be4-c261-4380-90e2-858f7da2c560"
-def source_image_name = "ubuntu14-proxy"		   
+def source_image_name = "ubuntu14-proxy"       
 def flavor = "m1.small"
 def insecure = "true"
 */
@@ -35,44 +36,44 @@ import groovy.json.JsonSlurper
 
 // Method to update Output Image Name of concerned job
 def UpdatePacker() {
-	def workdir = pwd();
-	def template= "templateModified.json"
-	echo "The Current Working Directory is : ${workdir}"
-	def UserPacker  = "${workdir}/${PackerFile}" /** Packerfile given by end-user */
-	def AppPacker   = "${workdir}/"+ template /** Updated Packefile after editing Imagename */
+  def workdir = pwd();
+  def template= "templateModified.json"
+  echo "The Current Working Directory is : ${workdir}"
+  def UserPacker  = "${workdir}/${PackerFile}" /** Packerfile given by end-user */
+  def AppPacker   = "${workdir}/"+ template /** Updated Packefile after editing Imagename */
   
-	File temp = new File(UserPacker)
-	def slurped = new JsonSlurper().parseText(temp.text)
-	def builder = new JsonBuilder(slurped)
-	//def ImageName = "${env.APP_NAME}-${env.MS_NAME}-${env.WORK_NAME}-${env.AUTHOR}" /** THIS HAS TO BE ENABLED AFTER REQUIREMENTS FULLFILLED */
-	def ImageName = "${packerImageName}" /** Currently forming Image name in runtime  , Need to device above mentioned Strategy to form Image Name*/
+  File temp = new File(UserPacker)
+  def slurped = new JsonSlurper().parseText(temp.text)
+  def builder = new JsonBuilder(slurped)
+  //def ImageName = "${env.APP_NAME}-${env.MS_NAME}-${env.WORK_NAME}-${env.AUTHOR}" /** THIS HAS TO BE ENABLED AFTER REQUIREMENTS FULLFILLED */
+  def ImageName = "${packerImageName}" /** Currently forming Image name in runtime  , Need to device above mentioned Strategy to form Image Name*/
 
-	builder.content.builders[0].image_name = ImageName /** This is Considering that user provides packerfile with a single Builder , Need to update it to accomodate Multiple Builders */
+  builder.content.builders[0].image_name = ImageName /** This is Considering that user provides packerfile with a single Builder , Need to update it to accomodate Multiple Builders */
 
-	def inputFile = new File(AppPacker)
-	if(inputFile.exists()) {
-	 //Println("A file named  " + template + "  already exists in the same folder")
-	}
-	else {
-	 inputFile.write(builder.toPrettyString())
-	 //println("The Content Written to the file "+ template + " is")
-	 //println(builder.toPrettyString())
-	}
-	return AppPacker /** Returning Packerfile Path as it is used to build machine image inside node and as it is defined in an external method */
+  def inputFile = new File(AppPacker)
+  if(inputFile.exists()) {
+   //Println("A file named  " + template + "  already exists in the same folder")
+  }
+  else {
+   inputFile.write(builder.toPrettyString())
+   //println("The Content Written to the file "+ template + " is")
+   //println(builder.toPrettyString())
+  }
+  return AppPacker /** Returning Packerfile Path as it is used to build machine image inside node and as it is defined in an external method */
 }
 
 
 try {
 node {
   echo "Parameter List"
-	echo "Indentity Url : ${identity_endpoint}"
+  echo "Indentity Url : ${identity_endpoint}"
   echo "SCM Type    : ${scmSourceRepo}"
   echo "SCM Path    : ${scmPath}"
   echo "SCM User    : ${scmUsername}"
   echo "SCM Pass    : ${scmPassword}"
   echo "HTTP Proxy  : ${httpProxy}"
   echo "HTTPS Proxy : ${httpsProxy}"
-  echo "Output Image Name : ${packerImageName}"	
+  echo "Output Image Name : ${packerImageName}" 
   echo "Nexus Host & Port  :${nexusRepoHostPort}" 
   echo "Nexus Repo Name    :${nexusRepo}"     
   echo "\n\nOpenStack Parameters" 
@@ -89,8 +90,8 @@ node {
   echo "Source Image Name - But this is expected from developer now    :${source_image_name}" 
   echo "Flavor    :${flavor}" 
   echo "Insecure    :${insecure}"
-	
-	
+  
+  
 // ---- Source Shell
 // REMOVE THIS BLOCK IF INPUTS ARE TAKEN FROM NODE
 /* Commented by Ramesh
@@ -223,107 +224,170 @@ sh "export OS_IMAGE_API_VERSION=2"
 //--------------------------------------  
 // INITIALIZING
 stage ('Initialization') { 
-	def appModuleSeperated = fileExists 'app'
-	def testModuleSeperated = fileExists 'test'
-	def appPath = ''
-	def testPath = ''
-	if (appModuleSeperated) {
-	    echo 'App Module is found , assumed that application is present in /app directory'
-	    appPath='app/'
-	} else {
-	    echo 'There is no defined Application path , hence it is assumed that application is in current directory'
-	    appPath = ''
-	}
+  def appModuleSeperated = fileExists 'app'
+  def testModuleSeperated = fileExists 'test'
+  def appPath = ''
+  def testPath = ''
+  if (appModuleSeperated) {
+      echo 'App Module is found , assumed that application is present in /app directory'
+      appPath='app/'
+  } else {
+      echo 'There is no defined Application path , hence it is assumed that application is in current directory'
+      appPath = ''
+  }
 
-	if (testModuleSeperated) {
-	    echo 'Test Module is found , assumed that Test Cases are Present for the concerned Modules and has to be performed'
-	    testPath = 'test/'
-	} else {
-	    echo 'No Test Modules found , hence it is assumed that no test environment and / or test cases to be performed'
-	    testPath = ''
-	}
-	
-	if (appPath + fileExists("${fileName}")) {
-	    echo "Packer file found at ${appPath}"
-	    PackerFile = appPath + "${fileName}"
-	} else {
-	    echo 'Packerfile not found under ' + appPath
-	}
-	
-	// COPYING APP Directory to Current Working Directory
-  	def appWorkingDir = (appPath=='') ? '.' : appPath.substring(0, appPath.length()-1)  
+  if (testModuleSeperated) {
+      echo 'Test Module is found , assumed that Test Cases are Present for the concerned Modules and has to be performed'
+      testPath = 'test/'
+  } else {
+      echo 'No Test Modules found , hence it is assumed that no test environment and / or test cases to be performed'
+      testPath = ''
+  }
+  
+  if (appPath + fileExists("${fileName}")) {
+      echo "Packer file found at ${appPath}"
+      PackerFile = appPath + "${fileName}"
+  } else {
+      echo 'Packerfile not found under ' + appPath
+  }
+  
+// Security Json File:
 
-	// NEXUS file for Time Stamp comparison. This file is used for comparing time stamps and differentiating input files from generated output files.        
-	//TODO - Tune it later. Dirty solution to identify the Jenkins generated artifacts for Nexus
-	sh 'echo Nexus>Nexus.txt'
-	//Dirty solution ends.
+ /* if (appPath + fileExists("${securityPackerFile}")) {
+      echo "Security Packer file found at ${appPath}"
+      securityPackerFile = appPath + "${securityPackerFile}"
+  } else {
+      echo 'Packerfile for Security Test  not found under ' + appPath
+  }*/
+
+  securityPackerFile = "${securityPackerFile}"
+  // COPYING APP Directory to Current Working Directory
+    def appWorkingDir = (appPath=='') ? '.' : appPath.substring(0, appPath.length()-1)  
+
+  // NEXUS file for Time Stamp comparison. This file is used for comparing time stamps and differentiating input files from generated output files.        
+  //TODO - Tune it later. Dirty solution to identify the Jenkins generated artifacts for Nexus
+  sh 'echo Nexus>Nexus.txt'
+  //Dirty solution ends.
 }
 
 //--------------------------------------
 //UPDATE PACKERFILE
 stage ('Update Parameters in PackerFile') {
-	echo "Updating Packer file with System Defined Parameters"
-	//AppPacker = UpdatePacker() /** Return value represents packerfile's absolute path */
-	AppPacker=PackerFile
+  echo "Updating Packer file with System Defined Parameters"
+  //AppPacker = UpdatePacker() /** Return value represents packerfile's absolute path */
+  AppPacker=PackerFile
+  securityApppacker=securityPackerFile
 }
 //--------------------------------------
 
-	
+  
 //BUILD & PACKING
 stage('validate') {
-	echo "Validating the template : ${AppPacker}"
-	echo "builder_type  : ${builder_type}"
-	echo "identity_endpoint  : ${identity_endpoint}"
-	echo "use_floating_ip  : ${use_floating_ip}"
-	echo "floating_ip_pool  : ${floating_ip_pool}"
-	echo "ssh_username  : ${ssh_username}"
-	echo "tenant_name  : ${tenant_name}"
-	
-	def packerValidateCommand = "packer validate -var builder_type=${builder_type} \
-	-var identity_endpoint=${identity_endpoint} \
-	-var tenant_name=${tenant_name} \
-	-var username=${username} \
-	-var password=${password} \
-	-var region=${region} \
-	-var use_floating_ip=${use_floating_ip} \
-	-var floating_ip_pool=${floating_ip_pool} \
-	-var ssh_username=${ssh_username} \
-	-var image_name=${image_name} \
-	-var networks=${networks} \
-	-var flavor=${flavor} \
-	-var insecure=${insecure}  ${AppPacker}"
-	
-	echo "command: " + packerValidateCommand
-	sh packerValidateCommand
-	//sh "packer -v || packer validate ${AppPacker}"
+  echo "Validating the template : ${AppPacker}"
+  echo "builder_type  : ${builder_type}"
+  echo "identity_endpoint  : ${identity_endpoint}"
+  echo "use_floating_ip  : ${use_floating_ip}"
+  echo "floating_ip_pool  : ${floating_ip_pool}"
+  echo "ssh_username  : ${ssh_username}"
+  echo "tenant_name  : ${tenant_name}"
+
+  
+  def packerValidateCommand = "packer validate -var builder_type=${builder_type} \
+  -var identity_endpoint=${identity_endpoint} \
+  -var tenant_name=${tenant_name} \
+  -var username=${username} \
+  -var password=${password} \
+  -var region=${region} \
+  -var use_floating_ip=${use_floating_ip} \
+  -var floating_ip_pool=${floating_ip_pool} \
+  -var ssh_username=${ssh_username} \
+  -var image_name=${image_name} \
+  -var networks=${networks} \
+  -var flavor=${flavor} \
+  -var insecure=${insecure}  ${AppPacker}"
+  
+  echo "command: " + packerValidateCommand
+  sh packerValidateCommand
+  //sh "packer -v || packer validate ${AppPacker}"
+
+  // Security Packer Validate
+
+    def securityPackerValidateCommand = "packer validate -var builder_type=${builder_type} \
+  -var identity_endpoint=${identity_endpoint} \
+  -var tenant_name=${tenant_name} \
+  -var username=${username} \
+  -var password=${password} \
+  -var region=${region} \
+  -var use_floating_ip=${use_floating_ip} \
+  -var floating_ip_pool=${floating_ip_pool} \
+  -var ssh_username=${ssh_username} \
+  -var image_name=${security_image_name} \
+  -var networks=${networks} \
+  -var flavor=${flavor} \
+  -var insecure=${insecure}  ${securityApppacker}"
+  
+  echo "command: " + securityPackerValidateCommand
+  sh securityPackerValidateCommand
+  //sh "packer -v || packer validate ${securityApppacker}"
 }
-	
-stage('build') {
-	echo "Building using packerfile :${AppPacker}"
-	def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
-	-var identity_endpoint=${identity_endpoint} \
-	-var tenant_name=${tenant_name} \
-	-var username=${username} \
-	-var password=${password} \
-	-var region=${region} \
-	-var use_floating_ip=${use_floating_ip} \
-	-var floating_ip_pool=${floating_ip_pool} \
-	-var ssh_username=${ssh_username} \
-	-var image_name=${image_name} \
-	-var networks=${networks} \
-	-var flavor=${flavor} \
-	-var insecure=${insecure} ${AppPacker} | tee build.log"
-	
-	echo "command: " + packerBuildCommand
-	
-	sh packerBuildCommand
-	//sh "packer build -machine-readable ${AppPacker}  | tee build.log"
-	UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
-	echo "The value returned by Packer Build For UUID generation is: ${UUID}"
+  
+/*stage('build') {
+  echo "Building using packerfile :${AppPacker}"
+  def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
+  -var identity_endpoint=${identity_endpoint} \
+  -var tenant_name=${tenant_name} \
+  -var username=${username} \
+  -var password=${password} \
+  -var region=${region} \
+  -var use_floating_ip=${use_floating_ip} \
+  -var floating_ip_pool=${floating_ip_pool} \
+  -var ssh_username=${ssh_username} \
+  -var image_name=${image_name} \
+  -var networks=${networks} \
+  -var flavor=${flavor} \
+  -var insecure=${insecure} ${AppPacker} | tee build.log"
+  
+  echo "command: " + packerBuildCommand
+  
+  sh packerBuildCommand
+  //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
+  UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
+  echo "The value returned by Packer Build For UUID generation is: ${UUID}"
+}*/
+
+  //Scanning check for VM
+stage('Vulnerability Scanning of VM') {
+  echo "Building using security packerfile :${securityApppacker}"
+  echo "source_image_name: ${UUID}"
+  sh "bash -c '[ -d /vmSecurityReport/${JOB_NAME} ] && rm -rf /vmSecurityReport/${JOB_NAME}'|true"
+  sh "mkdir /vmSecurityReport/${JOB_NAME}"
+  def secutityPackerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
+  -var identity_endpoint=${identity_endpoint} \
+  -var tenant_name=${tenant_name} \
+  -var username=${username} \
+  -var password=${password} \
+  -var region=${region} \
+  -var use_floating_ip=${use_floating_ip} \
+  -var floating_ip_pool=${floating_ip_pool} \
+  -var ssh_username=${ssh_username} \
+  -var image_name=${security_image_name} \
+  -VAR source_image_name=${UUID}\
+  -var networks=${networks} \
+  -var flavor=${flavor} \
+  -var insecure=${insecure} ${securityApppacker} | tee build-sec.log"
+  
+  echo "command: " + secutityPackerBuildCommand
+  
+  sh secutityPackerBuildCommand
+  //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
+  SUUID = sh(script: "grep 'artifact,0,id' build-sec.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
+  echo "The value returned by Security Packer Build For SUUID generation is: ${SUUID}"
+  sh "cp /vmSecurityReport/vmSecurityReport.tgz /vmSecurityReport/${JOB_NAME}"
+  sh "cd /vmSecurityReport/${JOB_NAME} && tar xvzf vmSecurityReport.tgz && mv vmSecurityReport.tgz /tmp"
 }
-	//Scanning check for VM
+
 /*stage('Vulnerability Scanning in VM') {
-	echo 'hi Vulnerability scanning'
+  echo 'hi Vulnerability scanning'
 sh dpkg -s apt-transport-https | grep -i status
 sh apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
 sh add-apt-repository "deb [arch=amd64] https://packages.cisofy.com/community/lynis/deb/ xenial main"
@@ -331,8 +395,8 @@ sh apt-get update --force
 sh apt-get install lynis --force
 sh lynis audit system
 }
-	*/
-/*	
+  */
+/*  
 //---------------------------------------
   if("${stage}".toUpperCase() == 'BUILD') {
     echo 'The Requested Stage is Build Only,hence successful VM Images will be pushed to Temp Repo'
@@ -340,7 +404,7 @@ sh lynis audit system
         echo "Validating the template : ${AppPacker}"
         sh "packer -v || packer validate ${AppPacker}"
       }
-	  
+    
     stage('build') {
         echo "Building using packerfile :${AppPacker}"
         sh "packer build -machine-readable ${AppPacker} | tee build.log"
@@ -348,7 +412,7 @@ sh lynis audit system
         echo "The value returned by Packer Build For UUID generation is: ${UUID}"
      }
     stage('test') {
-	// TESTS IF PRESENT COMES UNDER THIS SECTION
+  // TESTS IF PRESENT COMES UNDER THIS SECTION
      }
   } else if("${stage}".toUpperCase() == 'CERTIFY') {
     echo 'The Requested Stage is Certify,hence successful VM Images will be pushed to Temp Repo and provided with a sandbox for validation'
@@ -363,7 +427,7 @@ sh lynis audit system
         echo "The value returned by Packer Build For UUID generation is: ${UUID}"
     }
     stage('test') {
-	// TESTS IF PRESENT COMES UNDER THIS SECTION
+  // TESTS IF PRESENT COMES UNDER THIS SECTION
      }
     echo "VM Image Built and pushed into temp repository and provided with a sandbox"
   }  else if ("${stage}".toUpperCase() == 'DEPLOY') {
@@ -379,41 +443,41 @@ sh lynis audit system
         echo "The value returned by Packer Build For UUID generation is: ${UUID}"
     }
     stage('test') {
-	// TESTS IF PRESENT COMES UNDER THIS SECTION
+  // TESTS IF PRESENT COMES UNDER THIS SECTION
     }
     echo "VM Image Built and pushed into openstack-glance repository"
   }
  */
 
-	
+  
 /*
 //END OF IMAGE PUSHING INTO REPOSITORY
 // NEXUS UPDATE
 stage('Publish Jenkins Output to Nexus')  {
-	echo 'Publishing the artifacts...';
-	try{
-		sh 'find . -type f -newer Nexus.txt -print0 | tar -zcvf artifacts.tar.gz --ignore-failed-read --null -T -' 
-	} catch(Exception e) {
-	}
-	nexusArtifactUploader artifacts: [[artifactId: "${env.JOB_NAME}", classifier: '', file: 'artifacts.tar.gz', type: 'gzip']], credentialsId: 'Nexus', groupId: 'org.jenkins-ci.main.mec', nexusUrl: nexusRepoHostPort, nexusVersion: 'nexus3', protocol: 'http', repository: nexusRepo,version: "${env.BUILD_NUMBER}"
-	sh 'rm Nexus.txt'    
-	//Dirty solution ends 
-	echo "UUID# ${UUID} #UUID"
+  echo 'Publishing the artifacts...';
+  try{
+    sh 'find . -type f -newer Nexus.txt -print0 | tar -zcvf artifacts.tar.gz --ignore-failed-read --null -T -' 
+  } catch(Exception e) {
+  }
+  nexusArtifactUploader artifacts: [[artifactId: "${env.JOB_NAME}", classifier: '', file: 'artifacts.tar.gz', type: 'gzip']], credentialsId: 'Nexus', groupId: 'org.jenkins-ci.main.mec', nexusUrl: nexusRepoHostPort, nexusVersion: 'nexus3', protocol: 'http', repository: nexusRepo,version: "${env.BUILD_NUMBER}"
+  sh 'rm Nexus.txt'    
+  //Dirty solution ends 
+  echo "UUID# ${UUID} #UUID"
 }
 */
 }
 }
 finally {
-	node {
-		def EXIT_STATUS = sh(script:"sed -n -e '/openstack: Script exited with non-zero exit status/ s/.*: *//p' build.log",returnStdout: true)
-		if(!UUID) {
-     			if (EXIT_STATUS) {
-         			echo "Packer Build command exits with Openstack: Non-Zero Exit Code: "+ EXIT_STATUS
-     					 }
-    			error "Packer Build Exits without spawning VM"   
-		}
-		else{
-			/** IMAGE CREATION WAS SUCCESSFUL */
-		}
-	}
+  node {
+    def EXIT_STATUS = sh(script:"sed -n -e '/openstack: Script exited with non-zero exit status/ s/.*: *//p' build.log",returnStdout: true)
+    if(!UUID) {
+          if (EXIT_STATUS) {
+              echo "Packer Build command exits with Openstack: Non-Zero Exit Code: "+ EXIT_STATUS
+               }
+          error "Packer Build Exits without spawning VM"   
+    }
+    else{
+      /** IMAGE CREATION WAS SUCCESSFUL */
+    }
+  }
 }
