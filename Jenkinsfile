@@ -3,8 +3,8 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
-def UUID = ""
-//def UUID = "50d6878f-2aba-420a-bf36-c3b0b71e924c"
+//def UUID = ""
+def UUID = "ae3a6422-4c8b-4a42-a32c-3658ac48f01a"
 def SUUID = ""
 
 //Make the following as Params 
@@ -320,7 +320,7 @@ stage('validate') {
 
 }
   
-stage('build') {
+/*stage('build') {
   echo "Building using packerfile :${AppPacker}"
   def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
   -var identity_endpoint=${identity_endpoint} \
@@ -342,7 +342,7 @@ stage('build') {
   //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
   UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   echo "The value returned by Packer Build For UUID generation is: ${UUID}"
-}
+}*/
 
   //Scanning check for VM
 stage('Secuirity Json validate') {
@@ -357,7 +357,7 @@ stage('Secuirity Json validate') {
   
   // Security Packer Validate
 
-    def securityPackerValidateCommand = "packer validate -var builder_type=${builder_type} \
+  def securityPackerValidateCommand = "packer validate -var builder_type=${builder_type} \
   -var identity_endpoint=${identity_endpoint} \
   -var tenant_name=${tenant_name} \
   -var username=${username} \
