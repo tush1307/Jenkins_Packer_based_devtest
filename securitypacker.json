@@ -48,8 +48,9 @@
     "sudo apt-get install -y debsecan clamav lynis",
     "sudo mkdir -p /tmp/vmSecurityReport",
     "sudo lynis audit system -Q --report-file /tmp/vmSecurityReport/systemAudit.txt",
-    "sudo echo 'Scan report' > /tmp/vmSecurityReport/systemAudit.txt ; DIRTOSCAN='/home /var/spool /bin /sbin /opt /etc';for S in ${DIRTOSCAN}; do  sudo echo $S >>/tmp/vmSecurityReport/systemAudit.txt && sudo clamscan -ri $S -l /tmp/vmSecurityReport/systemAudit.txt;done",
     "sudo debsecan --format report | tee /tmp/vmSecurityReport/debSecanReport.txt",
+    "sudo freshclam",
+    "sudo clamscan --exclude-dir=/sys/* -i -r / -l /tmp/vmSecurityReport/clamAv.txt",
     "cd /tmp/vmSecurityReport/ && sudo tar cvzf ../vmSecurityReport.tgz *"
   ]
 },
