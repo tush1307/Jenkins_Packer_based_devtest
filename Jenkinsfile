@@ -88,7 +88,7 @@ node {
   echo "Floating IP Pool    :${floating_ip_pool}" 
   echo "Ssh Username    :${ssh_username}" 
   echo "Networks    :${networks}" 
-  //echo "Source Image Name - But this is expected from developer now    :${source_image_name}" 
+  echo "Source Image Name - But this is expected from developer now    :${source_image_name}" 
   echo "Flavor    :${flavor}" 
   echo "Insecure    :${insecure}"
   
