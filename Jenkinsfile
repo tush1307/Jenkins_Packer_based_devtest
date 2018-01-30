@@ -341,10 +341,11 @@ stage('build') {
   sh packerBuildCommand
   //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
   UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
+  UUID = UUID.replaceAll("\\s","")
   echo "The value returned by Packer Build For UUID generation is: ${UUID}"
 }
 
-  //Scanning check for VM
+//Scanning check for VM
 stage('Secuirity Json validate') {
   echo "Validating the template : ${securityApppacker}"
   echo "builder_type  : ${builder_type}"
@@ -376,6 +377,7 @@ stage('Secuirity Json validate') {
   sh securityPackerValidateCommand
   
 }  
+
 stage('Vulnerability Scanning of VM') {
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
