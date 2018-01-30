@@ -317,26 +317,7 @@ stage('validate') {
   sh packerValidateCommand
   //sh "packer -v || packer validate ${AppPacker}"
 
-  // Security Packer Validate
 
-    def securityPackerValidateCommand = "packer validate -var builder_type=${builder_type} \
-  -var identity_endpoint=${identity_endpoint} \
-  -var tenant_name=${tenant_name} \
-  -var username=${username} \
-  -var password=${password} \
-  -var region=${region} \
-  -var use_floating_ip=${use_floating_ip} \
-  -var floating_ip_pool=${floating_ip_pool} \
-  -var ssh_username=${ssh_username} \
-  -var image_name=${security_image_name} \
-  -var source_image_name=${UUID} \
-  -var networks=${networks} \
-  -var flavor=${flavor} \
-  -var insecure=${insecure}  ${securityApppacker}"
-  
-  echo "command: " + securityPackerValidateCommand
-  sh securityPackerValidateCommand
-  //sh "packer -v || packer validate ${securityApppacker}"
 }
   
 stage('build') {
@@ -364,6 +345,37 @@ stage('build') {
 }
 
   //Scanning check for VM
+stage('Secuirity Json validate') {
+  echo "Validating the template : ${securityApppacker}"
+  echo "builder_type  : ${builder_type}"
+  echo "identity_endpoint  : ${identity_endpoint}"
+  echo "use_floating_ip  : ${use_floating_ip}"
+  echo "floating_ip_pool  : ${floating_ip_pool}"
+  echo "ssh_username  : ${ssh_username}"
+  echo "tenant_name  : ${tenant_name}"
+
+  
+  // Security Packer Validate
+
+    def securityPackerValidateCommand = "packer validate -var builder_type=${builder_type} \
+  -var identity_endpoint=${identity_endpoint} \
+  -var tenant_name=${tenant_name} \
+  -var username=${username} \
+  -var password=${password} \
+  -var region=${region} \
+  -var use_floating_ip=${use_floating_ip} \
+  -var floating_ip_pool=${floating_ip_pool} \
+  -var ssh_username=${ssh_username} \
+  -var image_name=${security_image_name} \
+  -var source_image_name=${UUID} \
+  -var networks=${networks} \
+  -var flavor=${flavor} \
+  -var insecure=${insecure}  ${securityApppacker}"
+  
+  echo "command: " + securityPackerValidateCommand
+  sh securityPackerValidateCommand
+  
+}  
 stage('Vulnerability Scanning of VM') {
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
