@@ -3,7 +3,7 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
-def securityPackerFile = "/opt/securitypacker.json"
+def securityPackerFile = "\'/opt/securitypacker.json\'"
 def UUID = ""
 //def UUID = "ae3a6422-4c8b-4a42-a32c-3658ac48f01a"
 def SUUID = ""
