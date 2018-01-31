@@ -4,8 +4,8 @@ def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
 def securityPackerFile = "/vmSecurity/securitypacker.json"
-def UUID = ""
-//def UUID = "105b0a0e-8264-4095-a7a3-8ae60b9043e7"
+//def UUID = ""
+def UUID = "105b0a0e-8264-4095-a7a3-8ae60b9043e7"
 def SUUID = ""
 
 //Make the following as Params 
@@ -321,7 +321,7 @@ stage('validate') {
 
 }
   
-stage('build') {
+/*stage('build') {
   echo "Building using packerfile :${AppPacker}"
   def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
   -var identity_endpoint=${identity_endpoint} \
@@ -344,7 +344,7 @@ stage('build') {
   UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   UUID = UUID.replaceAll("\\s","")
   echo "The value returned by Packer Build For UUID generation is: ${UUID}"
-}
+}*/
 //Scanning check for VM
 stage('Secuirity Json validate') {
   echo "Validating the template : ${securityApppacker}"
