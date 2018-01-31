@@ -395,7 +395,7 @@ age('Vulnerability Scanning of VM') {
   -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure} ${securityApppacker} | tee build.log"
+  -var insecure=${insecure} '${securityApppacker}' | tee build.log"
   
   echo "command: " + secutityPackerBuildCommand
   
