@@ -3,6 +3,7 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
+def securityPackerFile = "/opt/securitypacker.json"
 def UUID = ""
 //def UUID = "ae3a6422-4c8b-4a42-a32c-3658ac48f01a"
 def SUUID = ""
@@ -379,6 +380,8 @@ stage('Secuirity Json validate') {
 }  
 
 stage('Vulnerability Scanning of VM') {
+  echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
+  sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
   def secutityPackerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
@@ -404,8 +407,28 @@ stage('Vulnerability Scanning of VM') {
   SUUID = SUUID.replaceAll("\\s","")
   echo "The value returned by Security Packer Build For SUUID generation is: ${SUUID}"
 
+
 }
 
+stage('Parsing Vulnerability Report') {
+  if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY')) {
+  try{  
+  echo "copy scan report to respectiver folder"
+  sh "cp vmSecurityReport.tgz  /vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/"
+  echo "Extract Report for Parsing"
+  sh "tar xvzf vmSecurityReport.tgz"
+  sh " cat debSecanReport.txt | awk  'BEGIN { RS = ""; OFS = " "} {$1 = $1; print }'|grep "high" | rev| cut -d'>' -f1 | rev |sed 's/^\s-//g'  |wc -l > tempvar1";
+  def high=readFile('tempvar1').trim()
+  echo "High Severity Issues=$high"
+  sh 'rm tempvar1'
+  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: 'tushar6.sharma@aricent.com'
+}
+catch(err) { 
+            echo 'VM Security Report Parsefailed.'
+            slackSend "VM Security Report Parsefailed. for ${env.JOB_NAME} ${env.BUILD_NUMBER}  (<${env.BUILD_URL}|Open>)" 
+      }
+}
+}
 /*stage('Vulnerability Scanning in VM') {
   echo 'hi Vulnerability scanning'
 sh dpkg -s apt-transport-https | grep -i status
