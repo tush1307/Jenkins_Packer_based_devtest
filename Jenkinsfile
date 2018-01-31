@@ -5,7 +5,7 @@ def nexusRepo = nexusRepository
 def BuildImageName = "${packerImageName}"
 def securityPackerFile = '/opt/securitypacker.json'
 //def UUID = ""
-def UUID = "105b0a0e-8264-4095-a7a3-8ae60b9043e7"
+def UUID = "ccfd613e-fef3-4ae4-ba5f-6e1edfa8af9c"
 def SUUID = ""
 
 //Make the following as Params 
