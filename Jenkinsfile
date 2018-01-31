@@ -3,7 +3,7 @@ def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
 
 def BuildImageName = "${packerImageName}"
-def securityPackerFile = "'/vmSecurity/securitypacker.json'"
+def securityPackerFile = "/vmSecurity/securitypacker.json"
 //def UUID = ""
 def UUID = "105b0a0e-8264-4095-a7a3-8ae60b9043e7"
 def SUUID = ""
@@ -371,7 +371,7 @@ stage('Secuirity Json validate') {
   -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure} '${securityApppacker}'"
+  -var insecure=${insecure} \'${securityApppacker}\'"
   
   echo "command: " + securityPackerValidateCommand
   sh securityPackerValidateCommand
@@ -395,7 +395,7 @@ age('Vulnerability Scanning of VM') {
   -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure} '${securityApppacker}' | tee build.log"
+  -var insecure=${insecure} \'${securityApppacker}\' | tee build.log"
   
   echo "command: " + secutityPackerBuildCommand
   
