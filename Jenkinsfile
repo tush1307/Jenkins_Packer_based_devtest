@@ -374,7 +374,7 @@ stage('Secuirity Json validate') {
   -var insecure=${insecure} \'${securityApppacker}\'"
   
   echo "command: " + securityPackerValidateCommand
-  sh securityPackerValidateCommand
+  sh "securityPackerValidateCommand"
 }  
 
 age('Vulnerability Scanning of VM') {
@@ -399,7 +399,7 @@ age('Vulnerability Scanning of VM') {
   
   echo "command: " + secutityPackerBuildCommand
   
-  sh secutityPackerBuildCommand
+  sh "secutityPackerBuildCommand"
   //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
   SUUID = sh(script: "grep 'artifact,0,id' build-sec.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   SUUID = SUUID.replaceAll("\\s","")
