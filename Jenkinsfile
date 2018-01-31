@@ -377,7 +377,7 @@ stage('Secuirity Json validate') {
   sh securityPackerValidateCommand
 }  
 
-age('Vulnerability Scanning of VM') {
+stage('Vulnerability Scanning of VM') {
   echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
   sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
   echo "Building using security packerfile :${securityApppacker}"
