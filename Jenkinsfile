@@ -371,7 +371,7 @@ stage('Secuirity Json validate') {
   -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure} \'${securityApppacker}\'"
+  -var insecure=${insecure}  \'${securityApppacker}\'"
   
   echo "command: " + securityPackerValidateCommand
   sh securityPackerValidateCommand
