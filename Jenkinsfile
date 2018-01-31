@@ -421,7 +421,7 @@ stage('Parsing Vulnerability Report') {
   def high=readFile('tempvar1').trim()
   echo "High Severity Issues=$high"
   sh 'rm tempvar1'
-  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: 'tushar6.sharma@aricent.com'
+  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: 'tusharsharma1307@gmail.com'
 }
 catch(err) { 
             echo 'VM Security Report Parsefailed.'
