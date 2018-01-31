@@ -414,7 +414,7 @@ stage('Parsing Vulnerability Report') {
   if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY')) {
   try{  
   echo "copy scan report to respectiver folder"
-  sh "cp vmSecurityReport.tgz  /vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/"
+  sh "cp vmSecurityReport.tgz  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/'"
   echo "Extract Report for Parsing"
   sh "tar xvzf vmSecurityReport.tgz"
   sh "cat debSecanReport.txt | grep 'high' | rev| cut -d'>' -f1 | rev |sed 's/^\\s-//g'  |wc -l > tempvar1";
