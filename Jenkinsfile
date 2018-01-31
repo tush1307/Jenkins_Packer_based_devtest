@@ -417,7 +417,7 @@ stage('Parsing Vulnerability Report') {
   sh "cp vmSecurityReport.tgz  /vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/"
   echo "Extract Report for Parsing"
   sh "tar xvzf vmSecurityReport.tgz"
-  sh "cat debSecanReport.txt | grep 'high' | rev| cut -d'>' -f1 | rev |sed 's/^\s-//g'  |wc -l > tempvar1";
+  sh "cat debSecanReport.txt | grep 'high' | rev| cut -d'>' -f1 | rev |sed 's/^\\s-//g'  |wc -l > tempvar1";
   def high=readFile('tempvar1').trim()
   echo "High Severity Issues=$high"
   sh 'rm tempvar1'
