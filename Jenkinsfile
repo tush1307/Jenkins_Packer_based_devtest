@@ -405,7 +405,7 @@ stage('Vulnerability Scanning of VM') {
 
   echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
   sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
-  sh "ssh root@{testDevelopmentIp} 'mkdir -p /vmSecurity/${env.JOB_NAME}/latest'"
+  sh "ssh root@${testDevelopmentIp} 'mkdir -p /vmSecurity/${env.JOB_NAME}/latest'"
   
 }
 
