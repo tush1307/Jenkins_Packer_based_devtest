@@ -410,7 +410,7 @@ stage('Vulnerability Scanning of VM') {
 }
 
 stage('Parsing Vulnerability Report') {
-  if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY')) || ("${stage}".toUpperCase() == 'BUILD')) {
+  if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY') || ("${stage}".toUpperCase() == 'BUILD'))  {
   try{  
   echo "copy scan report to respectiver folder"
   sh "cp vmSecurityReport.tgz  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/'"
