@@ -398,7 +398,7 @@ stage('Vulnerability Scanning of VM') {
   -var insecure=${insecure}  \'${securityApppacker}\' | tee build.log"
   
   echo "command: " + secutityPackerBuildCommand
-  
+  sh "false"
   sh secutityPackerBuildCommand
   //sh "packer build -machine-readable ${AppPacker}  | tee build.log"
   SUUID = sh(script: "grep 'artifact,0,id' build-sec.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
