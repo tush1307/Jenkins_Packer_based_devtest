@@ -379,6 +379,7 @@ stage('Secuirity Json validate') {
 }  
 
 stage('Vulnerability Scanning of VM') {
+  try {
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
   def secutityPackerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
@@ -406,6 +407,12 @@ stage('Vulnerability Scanning of VM') {
   echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
   sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
   sh "ssh root@${testDevelopmentIp} 'mkdir -p /vmSecurity/${env.JOB_NAME}/latest'"
+  }
+  catch(err) { 
+            echo 'Vulnerability Scanning of VM Failed: UNable to create instance'
+            slackSend "Vulnerability Scanning of VM Failed: UNable to create instance. for ${env.JOB_NAME} ${env.BUILD_NUMBER}  (<${env.BUILD_URL}|Open>)" 
+      }
+  
   
 }
 
