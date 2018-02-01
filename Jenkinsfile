@@ -321,7 +321,7 @@ stage('validate') {
 
 }
   
-stage('build') {
+/*stage('build') {
   echo "Building using packerfile :${AppPacker}"
   def packerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
   -var identity_endpoint=${identity_endpoint} \
@@ -344,7 +344,7 @@ stage('build') {
   UUID = sh(script: "grep 'artifact,0,id' build.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   UUID = UUID.replaceAll("\\s","")
   echo "The value returned by Packer Build For UUID generation is: ${UUID}"
-}
+}*/
 //Scanning check for VM
 stage('Secuirity Json validate') {
   echo "Validating the template : ${securityApppacker}"
@@ -371,7 +371,7 @@ stage('Secuirity Json validate') {
   -var source_image_name=${UUID} \
   -var networks=${networks} \
   -var flavor=${flavor} \
-  -var insecure=${insecure}  \'${securityApppacker}\'"
+  -var insecure=${insecure}  '${securityApppacker}'"
   
   echo "command: " + securityPackerValidateCommand
   sh securityPackerValidateCommand
