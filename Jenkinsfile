@@ -1,7 +1,7 @@
 #!/bin/bash +x
 def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
-def  appUserEmailId = 'tusharsharma1307@gmail.com'
+def appUserEmailId = "tusharsharma1307@gmail.com"
 def testDevelopmentIp = "172.19.74.232"
 def BuildImageName = "${packerImageName}"
 def securityPackerFile = '/opt/securitypacker.json'
@@ -417,11 +417,12 @@ stage('Parsing Vulnerability Report') {
   sh "scp vmSecurityReport.tgz  root@${testDevelopmentIp}:/vmSecurity/${env.JOB_NAME}/latest/vmSecurityReport.tgz"
   echo "Extract Report for Parsing"
   sh "tar xvzf vmSecurityReport.tgz"
-  sh "cat debSecanReport.txt | grep 'high' | rev| cut -d'>' -f1 | rev |sed 's/^\\s-//g'  |wc -l > tempvar1";
+  sh("""cat debSecanReport.txt | awk  'BEGIN { RS = ""; OFS = " "} {\$1 = \$1; print }'|grep "high" | rev| cut -d'>' -f1 | rev |sed 's/^\\s-//g'| wc -l > tempvar1""")
   def high=readFile('tempvar1').trim()
   echo "High Severity Issues=$high"
   sh 'rm tempvar1'
-  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: '${appUserEmailId}'
+  echo "Sending Email To : ${appUserEmailId}"
+  "emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: '${appUserEmailId}'"
 }
 catch(err) { 
             echo 'VM Security Report Parsefailed.'
