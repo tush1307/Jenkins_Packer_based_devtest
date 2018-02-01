@@ -1,7 +1,8 @@
 #!/bin/bash +x
 def nexusRepoHostPort = nexusRepositoryHost
 def nexusRepo = nexusRepository
-
+def  appUserEmailId = 'tusharsharma1307@gmail.com'
+def testDevelopmentIp = "172.19.74.232"
 def BuildImageName = "${packerImageName}"
 def securityPackerFile = '/opt/securitypacker.json'
 def UUID = ""
@@ -378,8 +379,6 @@ stage('Secuirity Json validate') {
 }  
 
 stage('Vulnerability Scanning of VM') {
-  echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
-  sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
   echo "Building using security packerfile :${securityApppacker}"
   echo "source_image_name: ${UUID}"
   def secutityPackerBuildCommand = "packer build -machine-readable -var builder_type=${builder_type} \
@@ -403,20 +402,26 @@ stage('Vulnerability Scanning of VM') {
   SUUID = sh(script: "grep 'artifact,0,id' build-sec.log | cut -d, -f6 | cut -d: -f2", returnStdout: true) // Fetching and storing UUID in local variable 
   SUUID = SUUID.replaceAll("\\s","")
   echo "The value returned by Security Packer Build For SUUID generation is: ${SUUID}"
+
+  echo "Create Directory : ${env.JOB_NAME}-${env.BUILD_NUMBER} in path /vmSecurity"
+  sh "mkdir  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}'"
+  sh "ssh root@{testDevelopmentIp} 'mkdir -p /vmSecurity/${env.JOB_NAME}/latest'"
+  
 }
 
 stage('Parsing Vulnerability Report') {
-  if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY')) {
+  if(("${stage}".toUpperCase() == 'DEPLOY') || ("${stage}".toUpperCase() == 'CERTIFY')) ||("${stage}".toUpperCase() == 'BUILD')) {
   try{  
   echo "copy scan report to respectiver folder"
   sh "cp vmSecurityReport.tgz  '/vmSecurity/${env.JOB_NAME}-${env.BUILD_NUMBER}/'"
+  sh "scp vmSecurityReport.tgz  root@${testDevelopmentIp}:/vmSecurity/${env.JOB_NAME}/latest/vmSecurityReport.tgz"
   echo "Extract Report for Parsing"
   sh "tar xvzf vmSecurityReport.tgz"
   sh "cat debSecanReport.txt | grep 'high' | rev| cut -d'>' -f1 | rev |sed 's/^\\s-//g'  |wc -l > tempvar1";
   def high=readFile('tempvar1').trim()
   echo "High Severity Issues=$high"
   sh 'rm tempvar1'
-  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: 'tusharsharma1307@gmail.com'
+  emailext attachmentsPattern: 'vmSecurityReport.tgz', body: 'Find attachments', subject: 'VM Vulnerability Reports', to: '${appUserEmailId}'
 }
 catch(err) { 
             echo 'VM Security Report Parsefailed.'
